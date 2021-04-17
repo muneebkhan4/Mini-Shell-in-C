@@ -23,8 +23,10 @@ int main()
 {
 
     struct command_t command;       // stores command, argv and argc
-
     char *dir[20];    // stores directories
+    
+    const char*CLEAR_SCREEN_ANSI = "\e[1;1H\e[2J";
+    write(STDOUT_FILENO, CLEAR_SCREEN_ANSI, 10);    	// clear screen
 
     while(1)
     {
@@ -52,34 +54,47 @@ int main()
         command.argv[command.argc]= NULL;         // making null terminated
 
         parsePath(dir);                            // parsing path
-
+        
         char* path = lookupPath(command.argv,dir);    // getting exact path
     
-        
-        int pid= fork();                        // making child process
-        
-        if(pid==0)
+        if(path!=NULL)
         {
-            execv(path, command.argv);          // running execv in child process
-            printf("\nError\n");                // print error in case of failure
-        }   
+            int pid= fork();                        // making child process
+        
+            if(pid==0)
+            {
+                execv(path, command.argv);          // running execv in child process
+                printf("\nError\n");                // print error in case of failure
+            }   
+            else
+            {
+                wait(NULL);
+                for(int i=0;i<20;i++)
+                {
+                    free(dir[i]);                   // free the dynamic memory
+                }
+                for(int i=0;i<command.argc;i++)
+                {
+                    free(command.argv[i]);          // free dynamic memory of argv which is in command struct
+                }
+            }
+       
+        }
         else
         {
-            wait(NULL);
+            sleep(1);
             for(int i=0;i<20;i++)
-            {
-                free(dir[i]);                   // free the dynamic memory
-            }
-            for(int i=0;i<command.argc;i++)
-            {
-                free(command.argv[i]);          // free dynamic memory of argv which is in command struct
-            }
-            printf("\nend\n");
-        }
-       
-    }        
+                {
+                    free(dir[i]);                   // free the dynamic memory
+                }
+                for(int i=0;i<command.argc;i++)
+                {
+                    free(command.argv[i]);          // free dynamic memory of argv which is in command struct
+                }
+        }        
 
-    
+    }
+
     for(int i=0;i<20;i++)
     {
         free(dir[i]);                   // free the dynamic memory
