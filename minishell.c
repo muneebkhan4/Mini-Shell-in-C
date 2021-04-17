@@ -51,9 +51,6 @@ int read_command(char cmd[], char* para[])
 
 void print_prompt()					// print prompt on screen
 {
-     const char*CLEAR_SCREEN_ANSI = "\e[1;1H\e[2J";
-    write(STDOUT_FILENO, CLEAR_SCREEN_ANSI, 10);	// clear screen
-    
     char buff[100];
    
     printf("muneeb@19L_2267-VirtualBox:~");
@@ -81,9 +78,7 @@ void parsePath(char *dirs[])
     thePath = (char *) malloc(strlen(pathEnvVar) + 1);
     strcpy(thePath, pathEnvVar);
 
-    printf("\nDir: %s\n", pathEnvVar);
-
-
+    
 
     /* Loop to parse thePath. Look for a ":"
     * delimiter between each path name.
@@ -126,7 +121,6 @@ char* lookupPath(char **argv, char **dir)
     * Allocate a new string, place the full path name in it, then
     * return the string.
     */
-    
     char *result;
     char pName[MAX_PATH_LEN];
 
@@ -148,7 +142,6 @@ char* lookupPath(char **argv, char **dir)
         strcpy(result, dir[i]);
         strcat(result, "/");
         strcat(result, argv[0]);
-        printf("\n%s\n", result);
         int fd = access(result, X_OK);      // checking for access of the command in each directory
         if(fd==0)
         {
@@ -161,4 +154,3 @@ char* lookupPath(char **argv, char **dir)
     fprintf(stderr, "%s: command not found\n", argv[0]);        // if command is not found
     return NULL;
 }
-
